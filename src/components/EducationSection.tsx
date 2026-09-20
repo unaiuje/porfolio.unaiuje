@@ -21,13 +21,13 @@ const EducationSection = () => {
                   {edu.institution.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground text-sm">{edu.institution}</p>
+                  <p className="font-bold text-foreground text-sm">{edu.institution}</p>
                   <p className="text-muted-foreground text-sm">{edu.program}</p>
                   {edu.description && (
-                    <p className="text-muted-foreground text-xs mt-1">{edu.description}</p>
+                    <p className="text-muted-foreground/70 text-xs mt-1">{edu.description}</p>
                   )}
                 </div>
-                <span className="text-muted-foreground text-xs whitespace-nowrap hidden sm:block">
+                <span className="text-muted-foreground text-xs font-medium whitespace-nowrap hidden sm:block">
                   {edu.period}
                 </span>
               </div>
