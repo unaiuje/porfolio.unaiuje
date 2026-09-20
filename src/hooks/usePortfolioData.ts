@@ -9,6 +9,7 @@ export interface Project {
   tags: string[];
   live_url: string | null;
   repo_url: string | null;
+  period: string | null;
   sort_order: number;
 }
 

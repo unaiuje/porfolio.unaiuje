@@ -25,6 +25,7 @@ const emptyProject = {
   tags: "",
   live_url: "",
   repo_url: "",
+  period: "",
   sort_order: 0,
 };
 const emptySkill = { name: "", sort_order: 0 };
@@ -96,6 +97,7 @@ const Admin = () => {
       tags: pForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
       live_url: pForm.live_url || null,
       repo_url: pForm.repo_url || null,
+      period: pForm.period || null,
       sort_order: Number(pForm.sort_order) || 0,
     };
     const { error } = pEditing
@@ -117,6 +119,7 @@ const Admin = () => {
       tags: (p.tags ?? []).join(", "),
       live_url: p.live_url ?? "",
       repo_url: p.repo_url ?? "",
+      period: p.period ?? "",
       sort_order: p.sort_order,
     });
   };
@@ -244,9 +247,15 @@ const Admin = () => {
                   <Input id="p-repo" value={pForm.repo_url} onChange={(e) => setPForm({ ...pForm, repo_url: e.target.value })} />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="p-order">Order</Label>
-                <Input id="p-order" type="number" value={pForm.sort_order} onChange={(e) => setPForm({ ...pForm, sort_order: Number(e.target.value) })} />
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="p-period">Dates</Label>
+                  <Input id="p-period" placeholder="2024 — now" value={pForm.period} onChange={(e) => setPForm({ ...pForm, period: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="p-order">Order</Label>
+                  <Input id="p-order" type="number" value={pForm.sort_order} onChange={(e) => setPForm({ ...pForm, sort_order: Number(e.target.value) })} />
+                </div>
               </div>
               <Button type="submit">{pEditing ? "Save changes" : "Add project"}</Button>
             </form>

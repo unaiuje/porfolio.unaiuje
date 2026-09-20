@@ -55,6 +55,7 @@ export type Database = {
           image_url: string | null
           live_url: string | null
           repo_url: string | null
+          period: string | null
           sort_order: number
           tags: string[]
           title: string
@@ -67,6 +68,7 @@ export type Database = {
           image_url?: string | null
           live_url?: string | null
           repo_url?: string | null
+          period?: string | null
           sort_order?: number
           tags?: string[]
           title: string
@@ -79,6 +81,7 @@ export type Database = {
           image_url?: string | null
           live_url?: string | null
           repo_url?: string | null
+          period?: string | null
           sort_order?: number
           tags?: string[]
           title?: string

@@ -22,7 +22,14 @@ const ProjectsSection = () => {
                   <img src={p.image_url} alt={p.title} className="w-full h-36 object-cover" loading="lazy" />
                 )}
                 <div className="p-4">
-                  <h3 className="font-semibold text-foreground text-sm">{p.title}</h3>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3 className="font-bold text-foreground text-sm">{p.title}</h3>
+                    {p.period && (
+                      <span className="text-muted-foreground text-xs font-medium whitespace-nowrap">
+                        {p.period}
+                      </span>
+                    )}
+                  </div>
                   {p.description && (
                     <p className="text-muted-foreground text-sm mt-1">{p.description}</p>
                   )}
