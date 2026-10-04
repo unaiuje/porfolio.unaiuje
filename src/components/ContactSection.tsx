@@ -7,7 +7,7 @@ const ContactSection = () => {
   const mailLink = links.find((l) => l.url.startsWith("mailto:"));
 
   return (
-    <section id="contact" className="py-12 pb-32">
+    <section id="contact" className="pt-6 pb-32">
       <div className="max-w-2xl mx-auto px-6">
         <AnimatedSection>
           <p className="text-muted-foreground text-sm mb-1">Contact</p>

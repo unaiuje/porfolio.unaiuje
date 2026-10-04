@@ -4,7 +4,7 @@ const HeroSection = () => (
       <div className="flex flex-col-reverse sm:flex-row items-start justify-between gap-8">
         <div className="flex-1">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-4">
-            Hi, I'm Unai 👋
+            Hi, I'm Unai
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
             AI programmer. High school student passionate about AI, martial arts and creating new things with technology.

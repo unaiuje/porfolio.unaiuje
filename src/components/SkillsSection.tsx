@@ -7,7 +7,7 @@ const SkillsSection = () => {
   if (loading || skills.length === 0) return null;
 
   return (
-    <section id="skills" className="py-12">
+    <section id="skills" className="py-6">
       <div className="max-w-2xl mx-auto px-6">
         <AnimatedSection>
           <h2 className="text-2xl font-bold text-foreground mb-6">Skills</h2>

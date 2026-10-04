@@ -1,7 +1,7 @@
 import AnimatedSection from "./AnimatedSection";
 
 const AboutSection = () => (
-  <section id="about" className="pt-6 pb-12">
+  <section id="about" className="py-6">
     <div className="max-w-2xl mx-auto px-6">
       <AnimatedSection>
         <h2 className="text-2xl font-bold text-foreground mb-4">About</h2>
