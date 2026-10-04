@@ -1,6 +1,49 @@
+import { useState } from "react";
 import AnimatedSection from "./AnimatedSection";
-import { useProjects } from "@/hooks/usePortfolioData";
-import { Github, Globe } from "lucide-react";
+import { useProjects, type Project } from "@/hooks/usePortfolioData";
+import { Github, Globe, Play } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+
+const ProjectMedia = ({ p }: { p: Project }) => {
+  const [open, setOpen] = useState(false);
+
+  if (!p.image_url && !p.video_url) return null;
+
+  if (!p.image_url) {
+    return <video src={p.video_url ?? undefined} controls preload="metadata" className="w-full aspect-video bg-muted" />;
+  }
+
+  return (
+    <>
+      <div className="relative">
+        <a href={p.live_url || undefined} target="_blank" rel="noreferrer" className="block cursor-pointer">
+          <img
+            src={p.image_url}
+            alt={p.title}
+            loading="lazy"
+            className="h-40 w-full overflow-hidden object-cover object-top"
+          />
+        </a>
+        {p.video_url && (
+          <button
+            onClick={() => setOpen(true)}
+            aria-label={`Play ${p.title} video`}
+            className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1.5 text-xs font-semibold text-primary-foreground backdrop-blur transition-colors hover:bg-primary"
+          >
+            <Play className="w-3.5 h-3.5" />
+            Video
+          </button>
+        )}
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl p-2">
+          <DialogTitle className="sr-only">{p.title} video</DialogTitle>
+          <video src={p.video_url ?? undefined} controls autoPlay className="max-h-[75vh] w-full rounded-lg bg-black" />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 const ProjectsSection = () => {
   const { data: projects, loading } = useProjects();
@@ -18,16 +61,7 @@ const ProjectsSection = () => {
           {projects.map((p) => (
             <AnimatedSection key={p.id}>
               <div className="h-full rounded-lg bg-card text-card-foreground flex flex-col overflow-hidden border transition-all duration-300 ease-out hover:shadow-lg">
-                {p.image_url && (
-                  <a href={p.live_url || undefined} target="_blank" rel="noreferrer" className="block cursor-pointer">
-                    <img
-                      src={p.image_url}
-                      alt={p.title}
-                      loading="lazy"
-                      className="h-40 w-full overflow-hidden object-cover object-top"
-                    />
-                  </a>
-                )}
+                <ProjectMedia p={p} />
                 <div className="flex flex-col px-4 pt-3 space-y-1">
                   <h3 className="font-semibold tracking-tight text-lg">{p.title}</h3>
                   {p.period && <time className="font-sans text-xs">{p.period}</time>}

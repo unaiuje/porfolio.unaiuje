@@ -6,6 +6,7 @@ export interface Project {
   title: string;
   description: string;
   image_url: string | null;
+  video_url: string | null;
   tags: string[];
   live_url: string | null;
   repo_url: string | null;

@@ -26,12 +26,13 @@ import {
 } from "@/components/ui/select";
 import { SocialIcon, SOCIAL_ICON_OPTIONS } from "@/lib/socialIcons";
 import { toast } from "sonner";
-import { Trash2, Pencil, X } from "lucide-react";
+import { Trash2, Pencil, X, Video } from "lucide-react";
 
 const emptyProject = {
   title: "",
   description: "",
   image_url: "",
+  video_url: "",
   tags: "",
   live_url: "",
   repo_url: "",
@@ -109,6 +110,7 @@ const Admin = () => {
       title: pForm.title,
       description: pForm.description,
       image_url: pForm.image_url || null,
+      video_url: pForm.video_url || null,
       tags: pForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
       live_url: pForm.live_url || null,
       repo_url: pForm.repo_url || null,
@@ -131,6 +133,7 @@ const Admin = () => {
       title: p.title,
       description: p.description ?? "",
       image_url: p.image_url ?? "",
+      video_url: p.video_url ?? "",
       tags: (p.tags ?? []).join(", "),
       live_url: p.live_url ?? "",
       repo_url: p.repo_url ?? "",
@@ -139,24 +142,33 @@ const Admin = () => {
     });
   };
 
-  const uploadProjectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadMedia = async (file: File, apply: (url: string) => void) => {
     setUploading(true);
     const ext = file.name.includes(".") ? file.name.split(".").pop() : "bin";
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const { error } = await supabase.storage
-      .from("project-images")
+      .from("project-media")
       .upload(path, file, { contentType: file.type });
     if (error) {
       toast.error(error.message);
     } else {
-      const { data } = supabase.storage.from("project-images").getPublicUrl(path);
-      setPForm((f) => ({ ...f, image_url: data.publicUrl }));
-      toast.success("Image uploaded");
+      const { data } = supabase.storage.from("project-media").getPublicUrl(path);
+      apply(data.publicUrl);
+      toast.success("File uploaded");
     }
     setUploading(false);
+  };
+
+  const uploadProjectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     e.target.value = "";
+    if (file) await uploadMedia(file, (url) => setPForm((f) => ({ ...f, image_url: url })));
+  };
+
+  const uploadProjectVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) await uploadMedia(file, (url) => setPForm((f) => ({ ...f, video_url: url })));
   };
 
   const remove = async (
@@ -304,7 +316,27 @@ const Admin = () => {
                   onChange={uploadProjectImage}
                   className="text-xs text-muted-foreground file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-secondary file:px-2 file:py-1 file:text-xs file:font-medium file:text-secondary-foreground"
                 />
-                <p className="text-xs text-muted-foreground">Paste a link or upload a file — it's stored in the site's image bucket.</p>
+                <p className="text-xs text-muted-foreground">Paste a link or upload a file — it's stored in the site's media bucket.</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="p-video">Video (optional)</Label>
+                <div className="flex items-center gap-2">
+                  <Input id="p-video" placeholder="https://… .mp4" value={pForm.video_url} onChange={(e) => setPForm({ ...pForm, video_url: e.target.value })} />
+                  {pForm.video_url && (
+                    <span className="flex h-9 w-14 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground">
+                      <Video className="w-4 h-4" />
+                    </span>
+                  )}
+                </div>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  aria-label="Upload video file"
+                  disabled={uploading}
+                  onChange={uploadProjectVideo}
+                  className="text-xs text-muted-foreground file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-secondary file:px-2 file:py-1 file:text-xs file:font-medium file:text-secondary-foreground"
+                />
+                <p className="text-xs text-muted-foreground">Shows a play button on the project card that opens the video.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="p-tags">Technologies (comma separated)</Label>
