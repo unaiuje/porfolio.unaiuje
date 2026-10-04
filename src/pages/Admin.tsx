@@ -106,16 +106,17 @@ const Admin = () => {
   // ---- Projects ----
   const submitProject = async (e: React.FormEvent) => {
     e.preventDefault();
+    // video_url is only sent when set, so saving still works before the DB column exists
     const payload = {
       title: pForm.title,
       description: pForm.description,
       image_url: pForm.image_url || null,
-      video_url: pForm.video_url || null,
       tags: pForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
       live_url: pForm.live_url || null,
       repo_url: pForm.repo_url || null,
       period: pForm.period || null,
       sort_order: Number(pForm.sort_order) || 0,
+      ...(pForm.video_url ? { video_url: pForm.video_url } : {}),
     };
     const { error } = pEditing
       ? await supabase.from("projects").update(payload).eq("id", pEditing)
