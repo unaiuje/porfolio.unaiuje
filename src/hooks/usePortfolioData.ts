@@ -28,7 +28,15 @@ export interface Education {
   sort_order: number;
 }
 
-function useTable<T>(table: "projects" | "skills" | "education") {
+export interface SocialLink {
+  id: string;
+  label: string;
+  url: string;
+  kind: string;
+  sort_order: number;
+}
+
+function useTable<T>(table: "projects" | "skills" | "education" | "social_links") {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,3 +61,4 @@ function useTable<T>(table: "projects" | "skills" | "education") {
 export const useProjects = () => useTable<Project>("projects");
 export const useSkills = () => useTable<Skill>("skills");
 export const useEducation = () => useTable<Education>("education");
+export const useSocialLinks = () => useTable<SocialLink>("social_links");

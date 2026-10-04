@@ -6,15 +6,25 @@ import {
   useProjects,
   useSkills,
   useEducation,
+  useSocialLinks,
   type Project,
   type Skill,
   type Education,
+  type SocialLink,
 } from "@/hooks/usePortfolioData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SocialIcon, SOCIAL_ICON_OPTIONS } from "@/lib/socialIcons";
 import { toast } from "sonner";
 import { Trash2, Pencil, X } from "lucide-react";
 
@@ -30,6 +40,7 @@ const emptyProject = {
 };
 const emptySkill = { name: "", sort_order: 0 };
 const emptyEducation = { institution: "", program: "", period: "", description: "", sort_order: 0 };
+const emptyLink = { label: "", url: "", kind: "globe", sort_order: 0 };
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -39,6 +50,7 @@ const Admin = () => {
   const projects = useProjects();
   const skills = useSkills();
   const education = useEducation();
+  const socialLinks = useSocialLinks();
 
   const [pForm, setPForm] = useState({ ...emptyProject });
   const [pEditing, setPEditing] = useState<string | null>(null);
@@ -46,6 +58,8 @@ const Admin = () => {
   const [sEditing, setSEditing] = useState<string | null>(null);
   const [eForm, setEForm] = useState({ ...emptyEducation });
   const [eEditing, setEEditing] = useState<string | null>(null);
+  const [lForm, setLForm] = useState({ ...emptyLink });
+  const [lEditing, setLEditing] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !session) navigate("/auth", { replace: true });
@@ -124,7 +138,11 @@ const Admin = () => {
     });
   };
 
-  const remove = async (table: "projects" | "skills" | "education", id: string, refresh: () => void) => {
+  const remove = async (
+    table: "projects" | "skills" | "education" | "social_links",
+    id: string,
+    refresh: () => void,
+  ) => {
     const { error } = await supabase.from(table).delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Deleted");
@@ -163,6 +181,25 @@ const Admin = () => {
     setEForm({ ...emptyEducation });
     setEEditing(null);
     education.refresh();
+  };
+
+  // ---- Social links ----
+  const submitLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      label: lForm.label,
+      url: lForm.url,
+      kind: lForm.kind,
+      sort_order: Number(lForm.sort_order) || 0,
+    };
+    const { error } = lEditing
+      ? await supabase.from("social_links").update(payload).eq("id", lEditing)
+      : await supabase.from("social_links").insert(payload);
+    if (error) return toast.error(error.message);
+    toast.success(lEditing ? "Link updated" : "Link added");
+    setLForm({ ...emptyLink });
+    setLEditing(null);
+    socialLinks.refresh();
   };
 
   const row = (title: string, subtitle: string, onEdit: () => void, onDelete: () => void, key: string) => (
@@ -207,6 +244,7 @@ const Admin = () => {
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
             <TabsTrigger value="education">Education</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
           </TabsList>
 
           <TabsContent value="projects" className="space-y-8">
@@ -234,7 +272,7 @@ const Admin = () => {
                 <Input id="p-img" placeholder="https://…" value={pForm.image_url} onChange={(e) => setPForm({ ...pForm, image_url: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="p-tags">Tags (comma separated)</Label>
+                <Label htmlFor="p-tags">Technologies (comma separated)</Label>
                 <Input id="p-tags" placeholder="React, AI" value={pForm.tags} onChange={(e) => setPForm({ ...pForm, tags: e.target.value })} />
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -364,6 +402,98 @@ const Admin = () => {
                     ed.id,
                   ),
                 )
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="links" className="space-y-8">
+            <form onSubmit={submitLink} className="space-y-3 rounded-xl border border-border p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-foreground">
+                  {lEditing ? "Edit link" : "Add a link"}
+                </h2>
+                {lEditing && (
+                  <Button type="button" size="sm" variant="ghost" onClick={() => { setLEditing(null); setLForm({ ...emptyLink }); }}>
+                    <X className="w-4 h-4 mr-1" /> Cancel
+                  </Button>
+                )}
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="l-label">Name</Label>
+                  <Input id="l-label" required placeholder="GitHub" value={lForm.label} onChange={(e) => setLForm({ ...lForm, label: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="l-kind">Icon</Label>
+                  <Select value={lForm.kind} onValueChange={(kind) => setLForm({ ...lForm, kind })}>
+                    <SelectTrigger id="l-kind" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SOCIAL_ICON_OPTIONS.map((name) => (
+                        <SelectItem key={name} value={name}>
+                          <span className="flex items-center gap-2">
+                            <SocialIcon name={name} size={14} />
+                            <span className="capitalize">{name === "x" ? "X (Twitter)" : name}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="l-url">URL</Label>
+                <Input id="l-url" required type="url" placeholder="https://github.com/username or mailto:you@mail.com" value={lForm.url} onChange={(e) => setLForm({ ...lForm, url: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="l-order">Order</Label>
+                <Input id="l-order" type="number" value={lForm.sort_order} onChange={(e) => setLForm({ ...lForm, sort_order: Number(e.target.value) })} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                These links appear in the bottom dock and in the contact section.
+              </p>
+              <Button type="submit">{lEditing ? "Save changes" : "Add link"}</Button>
+            </form>
+
+            <div className="rounded-xl border border-border px-4">
+              {socialLinks.data.length === 0 ? (
+                <p className="py-4 text-sm text-muted-foreground">No links yet.</p>
+              ) : (
+                socialLinks.data.map((link: SocialLink) => (
+                  <div key={link.id} className="flex items-center gap-3 py-3 border-b border-border last:border-0">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-foreground">
+                      <SocialIcon name={link.kind} size={14} />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{link.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{link.url}</p>
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setLEditing(link.id);
+                        setLForm({
+                          label: link.label,
+                          url: link.url,
+                          kind: link.kind === "email" ? "mail" : link.kind,
+                          sort_order: link.sort_order,
+                        });
+                      }}
+                      aria-label="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => remove("social_links", link.id, socialLinks.refresh)}
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))
               )}
             </div>
           </TabsContent>
