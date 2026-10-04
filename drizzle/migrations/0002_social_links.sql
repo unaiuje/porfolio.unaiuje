@@ -38,13 +38,13 @@ BEGIN
     CREATE POLICY "Social links are public" ON public.social_links FOR SELECT USING (true);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins insert social links') THEN
-    CREATE POLICY "Admins insert social links" ON public.social_links FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins insert social links" ON public.social_links FOR INSERT TO authenticated WITH CHECK ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins update social links') THEN
-    CREATE POLICY "Admins update social links" ON public.social_links FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins update social links" ON public.social_links FOR UPDATE TO authenticated USING ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin'))) WITH CHECK ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins delete social links') THEN
-    CREATE POLICY "Admins delete social links" ON public.social_links FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins delete social links" ON public.social_links FOR DELETE TO authenticated USING ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
 END
 $$;

@@ -1,7 +1,9 @@
 -- ============================================================
 -- RUN THIS ONCE in the Supabase SQL Editor (Dashboard > SQL Editor).
 -- It combines the pending migrations 0002 + 0003 + 0004.
--- Every statement is safe to re-run (idempotent).
+-- Safe to re-run (idempotent). Admin checks use the user_roles
+-- table directly instead of the has_role() function, whose
+-- signature differs in the live database.
 -- ============================================================
 
 -- Social links shown in the dock nav and contact section.
@@ -44,13 +46,13 @@ BEGIN
     CREATE POLICY "Social links are public" ON public.social_links FOR SELECT USING (true);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins insert social links') THEN
-    CREATE POLICY "Admins insert social links" ON public.social_links FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins insert social links" ON public.social_links FOR INSERT TO authenticated WITH CHECK ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins update social links') THEN
-    CREATE POLICY "Admins update social links" ON public.social_links FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins update social links" ON public.social_links FOR UPDATE TO authenticated USING ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin'))) WITH CHECK ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'social_links' AND policyname = 'Admins delete social links') THEN
-    CREATE POLICY "Admins delete social links" ON public.social_links FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+    CREATE POLICY "Admins delete social links" ON public.social_links FOR DELETE TO authenticated USING ((EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
 END
 $$;
@@ -79,15 +81,15 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Admins upload project media') THEN
     CREATE POLICY "Admins upload project media" ON storage.objects FOR INSERT TO authenticated
-      WITH CHECK (bucket_id = 'project-media' AND public.has_role(auth.uid(), 'admin'));
+      WITH CHECK (bucket_id = 'project-media' AND (EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Admins update project media') THEN
     CREATE POLICY "Admins update project media" ON storage.objects FOR UPDATE TO authenticated
-      USING (bucket_id = 'project-media' AND public.has_role(auth.uid(), 'admin'));
+      USING (bucket_id = 'project-media' AND (EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'storage' AND tablename = 'objects' AND policyname = 'Admins delete project media') THEN
     CREATE POLICY "Admins delete project media" ON storage.objects FOR DELETE TO authenticated
-      USING (bucket_id = 'project-media' AND public.has_role(auth.uid(), 'admin'));
+      USING (bucket_id = 'project-media' AND (EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')));
   END IF;
 END
 $$;
