@@ -1,6 +1,6 @@
 import AnimatedSection from "./AnimatedSection";
 import { useProjects } from "@/hooks/usePortfolioData";
-import { ExternalLink, Github } from "lucide-react";
+import { Github } from "lucide-react";
 
 const ProjectsSection = () => {
   const { data: projects, loading } = useProjects();
@@ -14,57 +14,56 @@ const ProjectsSection = () => {
           <h2 className="text-2xl font-bold text-foreground mb-8">Projects</h2>
         </AnimatedSection>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto">
           {projects.map((p, i) => (
             <AnimatedSection key={p.id} delay={i * 0.05}>
-              <div className="h-full rounded-xl border border-border bg-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="h-full rounded-lg bg-card text-card-foreground flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out">
                 {p.image_url && (
-                  <img src={p.image_url} alt={p.title} className="w-full h-36 object-cover" loading="lazy" />
+                  <a href={p.live_url || undefined} target="_blank" rel="noreferrer" className="block cursor-pointer">
+                    <img
+                      src={p.image_url}
+                      alt={p.title}
+                      loading="lazy"
+                      className="h-40 w-full overflow-hidden object-cover object-top"
+                    />
+                  </a>
                 )}
-                <div className="p-4">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="font-bold text-foreground text-sm">{p.title}</h3>
-                    {p.period && (
-                      <span className="text-muted-foreground text-xs font-medium whitespace-nowrap">
-                        {p.period}
-                      </span>
+                <div className="flex flex-col px-2 pt-1">
+                  <div className="space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold tracking-tight text-base">{p.title}</h3>
+                      {p.repo_url && (
+                        <a
+                          href={p.repo_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`${p.title} code`}
+                          className="shrink-0 mt-1 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <Github className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                    {p.period && <time className="font-sans text-xs">{p.period}</time>}
+                    {p.description && (
+                      <p className="text-pretty font-sans text-xs text-muted-foreground">{p.description}</p>
                     )}
                   </div>
-                  {p.description && (
-                    <p className="text-muted-foreground text-sm mt-1">{p.description}</p>
-                  )}
-                  {p.tags?.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
+                </div>
+                {p.tags?.length > 0 && (
+                  <div className="mt-auto flex flex-col px-2 pb-2">
+                    <div className="mt-2 flex flex-wrap gap-1">
                       {p.tags.map((t) => (
-                        <span key={t} className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[11px]">
+                        <span
+                          key={t}
+                          className="inline-flex items-center rounded-md border border-transparent bg-secondary text-secondary-foreground font-semibold px-1.5 py-0 text-[10px]"
+                        >
                           {t}
                         </span>
                       ))}
                     </div>
-                  )}
-                  <div className="flex gap-3 mt-3">
-                    {p.live_url && (
-                      <a
-                        href={p.live_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <ExternalLink className="w-3 h-3" /> Website
-                      </a>
-                    )}
-                    {p.repo_url && (
-                      <a
-                        href={p.repo_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <Github className="w-3 h-3" /> Code
-                      </a>
-                    )}
                   </div>
-                </div>
+                )}
               </div>
             </AnimatedSection>
           ))}
