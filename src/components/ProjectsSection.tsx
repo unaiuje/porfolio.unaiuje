@@ -1,6 +1,6 @@
 import AnimatedSection from "./AnimatedSection";
 import { useProjects } from "@/hooks/usePortfolioData";
-import { Github } from "lucide-react";
+import { Github, Globe } from "lucide-react";
 
 const ProjectsSection = () => {
   const { data: projects, loading } = useProjects();
@@ -17,7 +17,7 @@ const ProjectsSection = () => {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto">
           {projects.map((p, i) => (
             <AnimatedSection key={p.id} delay={i * 0.05}>
-              <div className="h-full rounded-lg bg-card text-card-foreground flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out">
+              <div className="h-full rounded-lg bg-card text-card-foreground flex flex-col overflow-hidden border transition-all duration-300 ease-out hover:shadow-lg">
                 {p.image_url && (
                   <a href={p.live_url || undefined} target="_blank" rel="noreferrer" className="block cursor-pointer">
                     <img
@@ -28,42 +28,53 @@ const ProjectsSection = () => {
                     />
                   </a>
                 )}
-                <div className="flex flex-col px-2 pt-1">
-                  <div className="space-y-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold tracking-tight text-base">{p.title}</h3>
-                      {p.repo_url && (
-                        <a
-                          href={p.repo_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`${p.title} code`}
-                          className="shrink-0 mt-1 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <Github className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-                    {p.period && <time className="font-sans text-xs">{p.period}</time>}
-                    {p.description && (
-                      <p className="text-pretty font-sans text-xs text-muted-foreground">{p.description}</p>
-                    )}
-                  </div>
+                <div className="flex flex-col px-4 pt-3 space-y-1">
+                  <h3 className="font-semibold tracking-tight text-lg">{p.title}</h3>
+                  {p.period && <time className="font-sans text-xs">{p.period}</time>}
+                  {p.description && (
+                    <p className="text-pretty font-sans text-sm text-muted-foreground">{p.description}</p>
+                  )}
                 </div>
-                {p.tags?.length > 0 && (
-                  <div className="mt-auto flex flex-col px-2 pb-2">
-                    <div className="mt-2 flex flex-wrap gap-1">
+                <div className="mt-auto flex flex-col px-4 pb-4 pt-3 gap-3">
+                  {p.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
                       {p.tags.map((t) => (
                         <span
                           key={t}
-                          className="inline-flex items-center rounded-md border border-transparent bg-secondary text-secondary-foreground font-semibold px-1.5 py-0 text-[10px]"
+                          className="inline-flex items-center rounded-md border border-transparent bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground"
                         >
                           {t}
                         </span>
                       ))}
                     </div>
-                  </div>
-                )}
+                  )}
+                  {(p.live_url || p.repo_url) && (
+                    <div className="flex flex-wrap gap-2">
+                      {p.live_url && (
+                        <a
+                          href={p.live_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          Website
+                        </a>
+                      )}
+                      {p.repo_url && (
+                        <a
+                          href={p.repo_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                          Code
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </AnimatedSection>
           ))}

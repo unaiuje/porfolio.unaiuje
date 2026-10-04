@@ -60,6 +60,7 @@ const Admin = () => {
   const [eEditing, setEEditing] = useState<string | null>(null);
   const [lForm, setLForm] = useState({ ...emptyLink });
   const [lEditing, setLEditing] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!loading && !session) navigate("/auth", { replace: true });
@@ -136,6 +137,26 @@ const Admin = () => {
       period: p.period ?? "",
       sort_order: p.sort_order,
     });
+  };
+
+  const uploadProjectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "bin";
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage
+      .from("project-images")
+      .upload(path, file, { contentType: file.type });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      const { data } = supabase.storage.from("project-images").getPublicUrl(path);
+      setPForm((f) => ({ ...f, image_url: data.publicUrl }));
+      toast.success("Image uploaded");
+    }
+    setUploading(false);
+    e.target.value = "";
   };
 
   const remove = async (
@@ -268,8 +289,22 @@ const Admin = () => {
                 <Textarea id="p-desc" value={pForm.description} onChange={(e) => setPForm({ ...pForm, description: e.target.value })} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="p-img">Image link</Label>
-                <Input id="p-img" placeholder="https://…" value={pForm.image_url} onChange={(e) => setPForm({ ...pForm, image_url: e.target.value })} />
+                <Label htmlFor="p-img">Image</Label>
+                <div className="flex items-center gap-2">
+                  <Input id="p-img" placeholder="https://…" value={pForm.image_url} onChange={(e) => setPForm({ ...pForm, image_url: e.target.value })} />
+                  {pForm.image_url && (
+                    <img src={pForm.image_url} alt="" className="h-9 w-14 shrink-0 rounded-md border border-border object-cover" />
+                  )}
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  aria-label="Upload image file"
+                  disabled={uploading}
+                  onChange={uploadProjectImage}
+                  className="text-xs text-muted-foreground file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-secondary file:px-2 file:py-1 file:text-xs file:font-medium file:text-secondary-foreground"
+                />
+                <p className="text-xs text-muted-foreground">Paste a link or upload a file — it's stored in the site's image bucket.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="p-tags">Technologies (comma separated)</Label>
