@@ -1,5 +1,5 @@
 const HeroSection = () => (
-  <section id="hero" className="pt-24 pb-16">
+  <section id="hero" className="pt-24 pb-6">
     <div className="max-w-2xl mx-auto px-6">
       <div className="flex flex-col-reverse sm:flex-row items-start justify-between gap-8">
         <div className="flex-1">

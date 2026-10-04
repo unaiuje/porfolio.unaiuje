@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const ProjectMedia = ({ p }: { p: Project }) => {
   const [open, setOpen] = useState(false);
+  const [broken, setBroken] = useState(false);
 
   if (!p.image_url && !p.video_url) return null;
 
@@ -21,7 +22,8 @@ const ProjectMedia = ({ p }: { p: Project }) => {
             src={p.image_url}
             alt={p.title}
             loading="lazy"
-            className="h-40 w-full overflow-hidden object-cover object-top"
+            onError={() => setBroken(true)}
+            className={broken ? "hidden" : "h-40 w-full overflow-hidden object-cover object-top"}
           />
         </a>
         {p.video_url && (
