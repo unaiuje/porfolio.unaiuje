@@ -15,8 +15,8 @@ const ProjectsSection = () => {
         </AnimatedSection>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto">
-          {projects.map((p, i) => (
-            <AnimatedSection key={p.id} delay={i * 0.05}>
+          {projects.map((p) => (
+            <AnimatedSection key={p.id}>
               <div className="h-full rounded-lg bg-card text-card-foreground flex flex-col overflow-hidden border transition-all duration-300 ease-out hover:shadow-lg">
                 {p.image_url && (
                   <a href={p.live_url || undefined} target="_blank" rel="noreferrer" className="block cursor-pointer">

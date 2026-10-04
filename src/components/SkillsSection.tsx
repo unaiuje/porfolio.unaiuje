@@ -12,7 +12,7 @@ const SkillsSection = () => {
         <AnimatedSection>
           <h2 className="text-2xl font-bold text-foreground mb-6">Skills</h2>
         </AnimatedSection>
-        <AnimatedSection delay={0.1}>
+        <AnimatedSection>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (
               <span
