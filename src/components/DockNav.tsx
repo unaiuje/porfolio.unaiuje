@@ -1,4 +1,4 @@
-import { Home, Sun, Moon } from "lucide-react";
+import { Home, Sun, Moon, Dices } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Dock, DockIcon } from "@/components/Dock";
 import { SocialIcon } from "@/lib/socialIcons";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 
 const DockNav = () => {
   const [dark, setDark] = useState(false);
+  const [game, setGame] = useState(false);
   const { data: links } = useSocialLinks();
 
   useEffect(() => {
@@ -16,8 +17,22 @@ const DockNav = () => {
   }, []);
 
   const toggleTheme = () => {
+    if (game) {
+      setGame(false);
+      document.documentElement.classList.remove("game");
+    }
     document.documentElement.classList.toggle("dark");
     setDark(!dark);
+  };
+
+  const toggleGame = () => {
+    const next = !game;
+    setGame(next);
+    document.documentElement.classList.toggle("game", next);
+    if (next) {
+      document.documentElement.classList.remove("dark");
+      setDark(false);
+    }
   };
 
   const scrollToTop = () => {
@@ -74,6 +89,17 @@ const DockNav = () => {
               </button>
             </TooltipTrigger>
             <TooltipContent side="top">{dark ? "Light mode" : "Dark mode"}</TooltipContent>
+          </Tooltip>
+        </DockIcon>
+
+        <DockIcon>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={toggleGame} className={dockItemClass} aria-label="Toggle game mode">
+                <Dices className="size-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top">{game ? "Normal mode" : "Game mode"}</TooltipContent>
           </Tooltip>
         </DockIcon>
       </Dock>

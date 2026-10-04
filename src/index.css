@@ -84,6 +84,85 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 240 4.9% 83.9%;
   }
+
+  /* Rummikub game mode: green felt table, ivory tiles */
+  .game {
+    --background: 150 45% 28%;
+    --foreground: 45 40% 95%;
+
+    --card: 47 45% 93%;
+    --card-foreground: 30 10% 15%;
+
+    --popover: 47 45% 93%;
+    --popover-foreground: 30 10% 15%;
+
+    --primary: 4 65% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 45 30% 85%;
+    --secondary-foreground: 30 10% 15%;
+
+    --muted: 150 35% 22%;
+    --muted-foreground: 120 15% 85%;
+
+    --accent: 150 35% 24%;
+    --accent-foreground: 45 40% 95%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 40 25% 72%;
+    --input: 40 25% 72%;
+    --ring: 4 65% 50%;
+
+    --sidebar-background: 150 35% 22%;
+    --sidebar-foreground: 45 40% 95%;
+    --sidebar-primary: 4 65% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 150 35% 24%;
+    --sidebar-accent-foreground: 45 40% 95%;
+    --sidebar-border: 150 30% 35%;
+    --sidebar-ring: 4 65% 50%;
+  }
+}
+
+/* Game-mode extras: tiles, felt vignette, tile-shaped headings */
+.game .bg-card {
+  border-radius: 14px;
+  box-shadow:
+    inset 0 2px 0 hsl(0 0% 100% / 0.85),
+    inset 0 -3px 0 hsl(35 25% 68%),
+    0 6px 14px hsl(150 50% 12% / 0.4);
+}
+
+/* muted text sits on light ivory inside tiles: keep it dark there */
+.game .bg-card .text-muted-foreground {
+  color: hsl(35 10% 38%);
+}
+
+.game div.min-h-screen {
+  box-shadow: inset 0 0 140px hsl(150 50% 10% / 0.45);
+}
+
+.game h2 {
+  display: inline-block;
+  background: hsl(47 45% 93%);
+  color: hsl(30 10% 15%);
+  padding: 0.3rem 0.9rem;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 2px 0 hsl(0 0% 100% / 0.85),
+    0 4px 10px hsl(150 50% 12% / 0.4);
+}
+
+.game nav.fixed > div {
+  background-color: hsl(47 45% 93% / 0.95) !important;
+  box-shadow: 0 6px 16px hsl(150 50% 10% / 0.5);
+}
+
+.game nav.fixed button,
+.game nav.fixed a {
+  color: hsl(30 10% 15%);
 }
 
 @layer base {
